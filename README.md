@@ -14,9 +14,15 @@ The FILE_NAMES_INDEX_PATH varible holds the path of the file(including the file 
  
     ls < dir of all files to parse> >  fileNamesToParse.txt
 
+**After running**
+
+    java ExtractFileInfo.java > output.txt // save output to file
+
 
 The current regex used searches for(public|private|protected) within the current line and grabs the result up to the "(" character. You can update the regex as deemed necessary. Currently the regex works best for java/c++ program files. 
 
+
+Remove the method counter variable to elimate the the enumeration of methods in the output. 
 
 Made by yours Truly.
  

@@ -12,7 +12,7 @@ public class ExtractJavaFileInfo {
 
         final String BASE_PATH = "...the entire path here../JavaFileExtractor2000/test/";
         final String FILE_NAMES_INDEX_PATH =  "...the entire path here../JavaFileExtractor2000/fileNamesToParse.txt";
-                                                ///ex: home/your_username/Documents/playground/JavaFileExtractor2000/fileNamesToParse.txt
+                                                ///ex: /home/your_username/Documents/playground/JavaFileExtractor2000/fileNamesToParse.txt
         processFiles(getFileNames(FILE_NAMES_INDEX_PATH), BASE_PATH);
     
     }
@@ -21,9 +21,11 @@ public class ExtractJavaFileInfo {
     //Expects files to be in the same directory as the base path
     static void processFiles(List<String> fileNames, String basePath){
 
+        
+        int methodCounter = 1;
         for (String fileName : fileNames) {
             System.out.println("\nFile : " + fileName );
-            extractJavaFile(basePath + fileName);
+            methodCounter = extractJavaFile(basePath + fileName,   methodCounter);
             //System.out.println("-----------------");
         }
     }
@@ -31,14 +33,17 @@ public class ExtractJavaFileInfo {
     //Batch processing
     static List<String> getFileNames(String fileNamesPath){
         List<String> fileNames = new ArrayList<String>();
+        int count = 1;
         try {
             BufferedReader input = new BufferedReader(
                     new FileReader(fileNamesPath));
             String line;
             System.out.println("Files: ");
             while ((line = input.readLine()) != null){
-                System.out.println(line);
+                System.out.println(count + ". " + line);
                 fileNames.add(line);
+
+                count++;
             }
                
             input.close();
@@ -48,53 +53,36 @@ public class ExtractJavaFileInfo {
         }
 
         return fileNames; 
-
-
     }
 
+    
     //method for openning text file
-    static void readJavaFile(String filePath) {
+    static int extractJavaFile(String filePath, int methodCounter) {
         try {
             BufferedReader input = new BufferedReader(
                     new FileReader(filePath));
-            String line;
-            while ((line = input.readLine()) != null)
-                System.out.println(line);
-            input.close();
-        } catch (IOException ex) {
-            System.err.println("Error occured");
-            ex.printStackTrace();
-        }
-    }
+            String line, group;
 
-    //method for openning text file
-    static void extractJavaFile(String filePath) {
-        try {
-            BufferedReader input = new BufferedReader(
-                    new FileReader(filePath));
-            String line;
-            while ((line = input.readLine()) != null)
-                if(filterLines(line) != "") {
-                    System.out.println(filterLines(line).trim());
-                    System.out.println();
+            Pattern reMethod= Pattern.compile("(public|private|protected)([A-Za-z\\s]+)\\("); 
+            Matcher matchMethod; 
+
+
+            while ((line = input.readLine()) != null){
+               
+                matchMethod = reMethod.matcher(line);
+               
+                if (matchMethod.find()) {
+                    group = matchMethod.group();
+                    System.out.println(methodCounter + " " + group.substring(0, group.length() - 1));
+                    methodCounter++;
                 }
+            }
+
             input.close();
         } catch (IOException ex) {
             System.err.println("Error occured");
         }
+        return methodCounter;
     }
 
-    static String filterLines(String line) {
-        
-
-        Pattern reMethod= Pattern.compile("(public|private|protected)([A-Za-z\\s]+)\\("); 
-        Matcher matchMethod = reMethod.matcher(line);
-
-        while (matchMethod.find()) {
-            String group = matchMethod.group();
-            System.out.println(group.substring(0, group.length() - 1));
-        }
-
-        return "";
-    }
 }
